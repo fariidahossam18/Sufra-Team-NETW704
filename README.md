@@ -29,3 +29,7 @@ Rules: each user can read/write only `users/<their uid>`.
 2. Put the Firebase `google-services.json` in that project's `app/` folder.
 3. Add the AWS team credentials at the end of that project's `local.properties` (see `local.properties.example`). This file is ignored by Git, so the keys are never uploaded.
 4. Sync Gradle and run on an emulator/phone with Google Play services.
+
+   ## Team
+
+   - Farida Hossam – Milestone 2 implementation (Buyer & Seller apps, AWS S3)
