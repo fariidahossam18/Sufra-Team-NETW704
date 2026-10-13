@@ -1,0 +1,22 @@
+<resources>
+    <!-- Texts that are different in the Buyer and Seller apps -->
+    <string name="app_name">Sufra Seller</string>
+    <string name="tagline">Manage your shop and orders</string>
+    <string name="header_emojis">🏪  📦  🧾  💰</string>
+    <string name="login_title">Seller sign in</string>
+    <string name="login_subtitle">Manage your shop on Sufra</string>
+    <string name="signup_title">Open your shop</string>
+    <string name="signup_subtitle">Create a seller account in a minute</string>
+    <string name="signup_emoji">🏪</string>
+    <string name="address_hint">Shop address</string>
+
+    <string-array name="shop_categories">
+        <item>Restaurant</item>
+        <item>Grocery</item>
+        <item>Bakery</item>
+        <item>Cafe</item>
+        <item>Sweets &amp; Desserts</item>
+        <item>Pharmacy</item>
+        <item>Fruits &amp; Vegetables</item>
+    </string-array>
+</resources>

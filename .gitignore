@@ -1,0 +1,8 @@
+# Never upload these (local.properties holds the AWS team keys!)
+**/local.properties
+**/build/
+**/.gradle/
+**/.idea/
+**/.kotlin/
+*.iml
+.DS_Store

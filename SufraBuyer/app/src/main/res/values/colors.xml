@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand palette -->
+    <!-- Main colour of this app (orange for buyers) -->
+    <color name="brand_primary">#FF5E1A</color>
+    <color name="brand_primary_dark">#E0440A</color>
+    <color name="brand_primary_light">#FFEDE3</color>
+    <color name="brand_pink">#FF3D7F</color>
+    <color name="brand_purple">#7B2FF7</color>
+    <color name="brand_purple_dark">#4A1FB8</color>
+    <color name="brand_purple_light">#F1E8FF</color>
+    <color name="brand_orange">#FF5E1A</color>
+    <color name="brand_yellow">#FFC43D</color>
+    <color name="brand_green">#22C55E</color>
+    <color name="brand_red">#E5484D</color>
+
+    <!-- Neutrals -->
+    <color name="page_bg">#FFF8F3</color>
+    <color name="text_dark">#1F1A17</color>
+    <color name="text_grey">#7A6F69</color>
+    <color name="divider">#EDE3DC</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="white_80">#CCFFFFFF</color>
+    <color name="white_25">#40FFFFFF</color>
+
+    <!-- Soft tile colours used behind category / shop emojis -->
+    <color name="tile_orange">#FFE4D1</color>
+    <color name="tile_pink">#FFDDE8</color>
+    <color name="tile_yellow">#FFF1C9</color>
+    <color name="tile_green">#D9F5E3</color>
+    <color name="tile_blue">#DCEBFF</color>
+    <color name="tile_purple">#EADDFF</color>
+    <color name="tile_red">#FFD9D9</color>
+    <color name="tile_brown">#F1E2D3</color>
+</resources>

@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "227308166665",
+    "firebase_url": "https://sufra-3fcec-default-rtdb.firebaseio.com",
+    "project_id": "sufra-3fcec",
+    "storage_bucket": "sufra-3fcec.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:227308166665:android:ae751c5912c8c1208622d8",
+        "android_client_info": {
+          "package_name": "com.example.sufra"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoX1-D9rj1fOf5-ETqDIfXXbYaXJTYKWA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:227308166665:android:1b527cf5275d18e18622d8",
+        "android_client_info": {
+          "package_name": "com.example.sufrabuyer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoX1-D9rj1fOf5-ETqDIfXXbYaXJTYKWA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
