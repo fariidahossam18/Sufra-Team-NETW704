@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Folder that the camera app is allowed to save product photos into (used by PhotoPicker.kt) -->
+<paths>
+    <cache-path
+        name="camera_photos"
+        path="camera/" />
+</paths>

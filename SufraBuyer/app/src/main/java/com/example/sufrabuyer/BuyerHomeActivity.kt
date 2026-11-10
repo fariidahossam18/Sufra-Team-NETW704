@@ -1,56 +1,41 @@
 package com.example.sufrabuyer
 
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
-import android.widget.GridLayout
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.sufrabuyer.databinding.ActivityBuyerHomeBinding
-import com.example.sufrabuyer.databinding.ItemCategoryBinding
-import com.example.sufrabuyer.databinding.ItemShopCardBinding
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.launch
 
 /**
- * Buyer home screen (Buyer app). Avatar shows the S3 profile photo (Milestone 2).
- * The header (name, address, initials) is live-synced with Firebase.
- * Categories and shops are sample UI for now – real shops come from sellers in Milestone 3.
+ * Buyer home screen (Buyer app).
+ *
+ *  - Header: greeting, delivery address and avatar, live-synced with Firebase (Milestones 1-2)
+ *  - Milestone 3: TabLayout + ViewPager2 with two fragments: Shops and Cart.
+ *    The user can tap a tab or swipe left/right. The Cart tab shows a badge with the number of items.
+ *
+ * Other screens can open a specific tab with   putExtra(EXTRA_OPEN_TAB, TAB_CART)
  */
 class BuyerHomeActivity : AppCompatActivity() {
+
+    companion object {
+        const val EXTRA_OPEN_TAB = "open_tab"
+        const val TAB_SHOPS = 0
+        const val TAB_CART = 1
+    }
 
     private lateinit var binding: ActivityBuyerHomeBinding
     private lateinit var uid: String
 
-    private data class Category(val emoji: String, val label: String, @ColorRes val color: Int)
-    private data class ShopPreview(
-        val emoji: String, val name: String, val cuisine: String,
-        val rating: String, val time: String, val badge: String, @ColorRes val color: Int
-    )
-
-    private val categories = listOf(
-        Category("🍔", "Burgers", R.color.tile_orange),
-        Category("🍕", "Pizza", R.color.tile_red),
-        Category("🛒", "Grocery", R.color.tile_green),
-        Category("🍰", "Desserts", R.color.tile_pink),
-        Category("☕", "Coffee", R.color.tile_brown),
-        Category("🥗", "Healthy", R.color.tile_green),
-        Category("🍣", "Sushi", R.color.tile_blue),
-        Category("💊", "Pharmacy", R.color.tile_purple)
-    )
-
-    private val sampleShops = listOf(
-        ShopPreview("🍔", "Burger Barn", "Burgers · American", "4.8", "20–30 min", "Free delivery", R.color.tile_orange),
-        ShopPreview("🍕", "Napoli Slice", "Pizza · Italian", "4.6", "25–35 min", "20% OFF", R.color.tile_red),
-        ShopPreview("🥐", "Golden Crust", "Bakery · Breakfast", "4.9", "15–25 min", "New", R.color.tile_yellow),
-        ShopPreview("🛒", "Fresh Mart", "Grocery · Essentials", "4.7", "30–40 min", "Free delivery", R.color.tile_green)
-    )
+    /** Called by CartManager whenever the cart changes -> update the badge on the Cart tab. */
+    private val cartListener: () -> Unit = { updateCartBadge() }
 
     private val headerListener = object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
@@ -75,39 +60,77 @@ class BuyerHomeActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityBuyerHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        applyEdgeToEdge(binding.root, binding.header, padBottom = false)
+        applyEdgeToEdge(binding.root, binding.header)
 
         val firebaseUser = FirebaseRefs.auth.currentUser
         if (firebaseUser == null) { goToLogin(); return }
         uid = firebaseUser.uid
 
-        buildCategories()
-        buildShops()
-
-        binding.avatarContainer.setOnClickListener { openProfile() }
-        binding.searchCard.setOnClickListener { toast("🔍 Search is coming in Milestone 3") }
-
-        binding.bottomNav.selectedItemId = R.id.nav_home
-        binding.bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> true
-                R.id.nav_profile -> { openProfile(); false }
-                else -> { toast("Coming in Milestone 3 🚧"); false }
-            }
+        setupTabs()
+        binding.avatarContainer.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
         }
+
+        if (savedInstanceState == null) openTabFromIntent(intent)
+    }
+
+    /** Connects the TabLayout with the ViewPager2 (same idea as Tutorial 3.1). */
+    private fun setupTabs() {
+        binding.viewPager.adapter = HomePagerAdapter(this)
+        binding.viewPager.offscreenPageLimit = 1
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            when (position) {
+                TAB_CART -> { tab.text = "Cart"; tab.setIcon(R.drawable.ic_cart) }
+                else -> { tab.text = "Shops"; tab.setIcon(R.drawable.ic_store) }
+            }
+        }.attach()
+    }
+
+    /** Lets other screens (e.g. ShopActivity) bring the user back here on a specific tab. */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        openTabFromIntent(intent)
+    }
+
+    private fun openTabFromIntent(intent: Intent?) {
+        val tab = intent?.getIntExtra(EXTRA_OPEN_TAB, -1) ?: -1
+        if (tab >= 0) openTab(tab)
+    }
+
+    /** Switches to a tab, e.g. openTab(TAB_SHOPS) from the empty cart. */
+    fun openTab(position: Int) {
+        binding.viewPager.currentItem = position
     }
 
     override fun onStart() {
         super.onStart()
-        if (::uid.isInitialized) FirebaseRefs.userRef(uid).addValueEventListener(headerListener)
+        if (!::uid.isInitialized) return
+        FirebaseRefs.userRef(uid).addValueEventListener(headerListener)
+        CartManager.addListener(cartListener)
+        updateCartBadge()
     }
 
     override fun onStop() {
         super.onStop()
-        if (::uid.isInitialized) FirebaseRefs.userRef(uid).removeEventListener(headerListener)
+        if (!::uid.isInitialized) return
+        FirebaseRefs.userRef(uid).removeEventListener(headerListener)
+        CartManager.removeListener(cartListener)
     }
 
-    private fun openProfile() = startActivity(Intent(this, ProfileActivity::class.java))
+    private fun updateCartBadge() {
+        val tab = binding.tabLayout.getTabAt(TAB_CART) ?: return
+        val count = CartManager.itemCount
+        if (count > 0) {
+            tab.orCreateBadge.apply {
+                number = count
+                backgroundColor = ContextCompat.getColor(this@BuyerHomeActivity, R.color.brand_primary)
+                badgeTextColor = ContextCompat.getColor(this@BuyerHomeActivity, R.color.white)
+            }
+        } else {
+            tab.removeBadge()
+        }
+    }
 
     /** Shows the S3 profile photo in the small avatar circle (Milestone 2). */
     private fun showAvatarPhoto(url: String) {
@@ -124,40 +147,6 @@ class BuyerHomeActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 binding.ivAvatarSmall.visibility = View.GONE   // keep the initials
             }
-        }
-    }
-
-    private fun buildCategories() {
-        binding.gridCategories.removeAllViews()
-        categories.forEach { category ->
-            val item = ItemCategoryBinding.inflate(layoutInflater, binding.gridCategories, false)
-            item.tvEmoji.text = category.emoji
-            item.tvLabel.text = category.label
-            item.tile.backgroundTintList =
-                ColorStateList.valueOf(ContextCompat.getColor(this, category.color))
-            item.root.setOnClickListener { toast("${category.emoji} ${category.label} shops coming in Milestone 3") }
-
-            // equal-width columns
-            val params = GridLayout.LayoutParams(
-                GridLayout.spec(GridLayout.UNDEFINED, 1f),
-                GridLayout.spec(GridLayout.UNDEFINED, 1f)
-            ).apply { width = 0 }
-            binding.gridCategories.addView(item.root, params)
-        }
-    }
-
-    private fun buildShops() {
-        binding.shopsContainer.removeAllViews()
-        sampleShops.forEach { shop ->
-            val card = ItemShopCardBinding.inflate(layoutInflater, binding.shopsContainer, false)
-            card.tvEmoji.text = shop.emoji
-            card.tvName.text = shop.name
-            card.tvCuisine.text = shop.cuisine
-            card.tvMeta.text = "${shop.rating}  •  ${shop.time}"
-            card.tvBadge.text = shop.badge
-            card.cover.setBackgroundColor(ContextCompat.getColor(this, shop.color))
-            card.root.setOnClickListener { toast("${shop.name} menu coming in Milestone 3") }
-            binding.shopsContainer.addView(card.root)
         }
     }
 }

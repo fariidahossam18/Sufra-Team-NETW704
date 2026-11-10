@@ -10,11 +10,14 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.fragment.app.Fragment
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -104,3 +107,33 @@ fun friendlyAuthError(e: Exception): String = when (e) {
     is FirebaseNetworkException -> "No internet connection. Please try again."
     else -> e.localizedMessage ?: "Something went wrong. Please try again."
 }
+
+/* ---------------------------------------------------------------------------
+ *  Milestone 3 helpers
+ * ------------------------------------------------------------------------- */
+
+/** Same as Activity.toast but for fragments (does nothing if the fragment is already closed). */
+fun Fragment.toast(message: String) {
+    context?.let { Toast.makeText(it, message, Toast.LENGTH_LONG).show() }
+}
+
+/** 45.0 -> "EGP 45",  12.5 -> "EGP 12.5",  1250.75 -> "EGP 1,250.75" */
+fun formatPrice(value: Double): String =
+    "EGP " + DecimalFormat("#,##0.##", DecimalFormatSymbols(Locale.US)).format(value)
+
+/** An emoji for each shop category (shown when a shop or product has no photo yet). */
+fun categoryEmoji(category: String): String {
+    val c = category.lowercase(Locale.ROOT)
+    return when {
+        "grocery" in c -> "🛒"
+        "bakery" in c -> "🥐"
+        "cafe" in c -> "☕"
+        "sweet" in c || "dessert" in c -> "🍰"
+        "pharmacy" in c -> "💊"
+        "fruit" in c || "vegetable" in c -> "🍎"
+        else -> "🍽️"
+    }
+}
+
+/** Short, readable order number: "-NxA9k2LmQ" -> "#A9K2LMQ" (last 7 characters). */
+fun shortOrderId(id: String): String = "#" + id.takeLast(7).uppercase(Locale.ROOT)

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Rounded pill behind the  -  1  +  quantity buttons -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/brand_primary_light" />
+    <corners android:radius="50dp" />
+</shape>

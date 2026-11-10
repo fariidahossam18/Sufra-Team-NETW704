@@ -5,6 +5,26 @@
         ".read": "auth != null && auth.uid === $uid",
         ".write": "auth != null && auth.uid === $uid"
       }
+    },
+    "shops": {
+      ".read": "auth != null",
+      "$sellerId": {
+        ".write": "auth != null && auth.uid === $sellerId"
+      }
+    },
+    "products": {
+      ".read": "auth != null",
+      "$sellerId": {
+        ".write": "auth != null && auth.uid === $sellerId"
+      }
+    },
+    "orders": {
+      ".read": "auth != null && ((query.orderByChild == 'sellerId' && query.equalTo == auth.uid) || (query.orderByChild == 'buyerId' && query.equalTo == auth.uid))",
+      ".indexOn": ["sellerId", "buyerId"],
+      "$orderId": {
+        ".read": "auth != null && (data.child('buyerId').val() === auth.uid || data.child('sellerId').val() === auth.uid)",
+        ".write": "auth != null && ((!data.exists() && newData.child('buyerId').val() === auth.uid) || (data.exists() && (data.child('buyerId').val() === auth.uid || data.child('sellerId').val() === auth.uid)))"
+      }
     }
   }
 }
