@@ -23,6 +23,14 @@
             android:layout_width="match_parent"
             android:layout_height="110dp">
 
+            <!-- Added ImageView for ivShop -->
+            <ImageView
+                android:id="@+id/ivShop"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="Shop Image" />
+
             <TextView
                 android:id="@+id/tvEmoji"
                 android:layout_width="wrap_content"
@@ -52,8 +60,9 @@
             android:orientation="vertical"
             android:padding="12dp">
 
+            <!-- Updated id to tvShopName -->
             <TextView
-                android:id="@+id/tvName"
+                android:id="@+id/tvShopName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
@@ -61,12 +70,23 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
+            <!-- Updated id to tvCategory -->
             <TextView
-                android:id="@+id/tvCuisine"
+                android:id="@+id/tvCategory"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_grey"
                 android:textSize="12sp" />
+
+            <!-- Added TextView for tvAddress -->
+            <TextView
+                android:id="@+id/tvAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/text_grey"
+                android:textSize="11sp"
+                android:maxLines="1" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
