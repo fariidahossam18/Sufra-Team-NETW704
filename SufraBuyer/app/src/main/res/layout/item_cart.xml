@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One product row in the cart (Milestone 3) -->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="6dp"
+    android:layout_marginBottom="6dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="1dp"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <!-- Photo with emoji behind it -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            app:cardBackgroundColor="@color/tile_orange"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="🍽️"
+                android:textSize="28sp" />
+
+            <ImageView
+                android:id="@+id/ivProduct"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="Product photo"
+                android:scaleType="centerCrop" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/text_dark"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvUnitPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_grey"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvSubtotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/brand_primary"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/btnRemove"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Remove from cart"
+                android:src="@drawable/ic_delete"
+                app:tint="@color/text_grey" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_stepper"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/btnMinus"
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Remove one"
+                    android:src="@drawable/ic_remove"
+                    app:tint="@color/brand_primary" />
+
+                <TextView
+                    android:id="@+id/tvQty"
+                    android:layout_width="28dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="@color/brand_primary_dark"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/btnPlus"
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Add one more"
+                    android:src="@drawable/ic_add"
+                    app:tint="@color/brand_primary" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
