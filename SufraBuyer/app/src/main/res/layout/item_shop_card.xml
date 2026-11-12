@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- One "popular shop" card on the buyer home screen (inflated from Kotlin) -->
+<!--
+    One shop card in the Shops grid (Milestone 3, same idea as item_shop_card.xml in Tutorial 3.2):
+    a CardView with the shop photo and the shop name.
+-->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="210dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="12dp"
-    android:layout_marginBottom="8dp"
+    android:layout_margin="6dp"
     android:clickable="true"
     android:focusable="true"
     app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="18dp"
-    app:cardElevation="3dp"
+    app:cardElevation="2dp"
     app:strokeWidth="0dp">
 
     <LinearLayout
@@ -18,98 +20,63 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Shop photo (the seller's photo from S3). The emoji shows when there is no photo. -->
         <FrameLayout
             android:id="@+id/cover"
             android:layout_width="match_parent"
-            android:layout_height="110dp">
-
-            <!-- Added ImageView for ivShop -->
-            <ImageView
-                android:id="@+id/ivShop"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:contentDescription="Shop Image" />
+            android:layout_height="110dp"
+            android:background="@color/tile_orange">
 
             <TextView
                 android:id="@+id/tvEmoji"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:textSize="56sp" />
+                android:text="🍽️"
+                android:textSize="44sp" />
 
-            <TextView
-                android:id="@+id/tvBadge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top|start"
-                android:layout_margin="10dp"
-                android:background="@drawable/bg_chip_white"
-                android:paddingStart="10dp"
-                android:paddingTop="3dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="3dp"
-                android:textColor="@color/brand_primary"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+            <ImageView
+                android:id="@+id/ivShop"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="Shop photo"
+                android:scaleType="centerCrop" />
         </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:padding="10dp">
 
-            <!-- Updated id to tvShopName -->
             <TextView
                 android:id="@+id/tvShopName"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="@color/text_dark"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textStyle="bold" />
 
-            <!-- Updated id to tvCategory -->
             <TextView
                 android:id="@+id/tvCategory"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_grey"
-                android:textSize="12sp" />
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/brand_primary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
-            <!-- Added TextView for tvAddress -->
             <TextView
                 android:id="@+id/tvAddress"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:textColor="@color/text_grey"
-                android:textSize="11sp"
-                android:maxLines="1" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:contentDescription="Rating"
-                    android:src="@drawable/ic_star"
-                    app:tint="@color/brand_yellow" />
-
-                <TextView
-                    android:id="@+id/tvMeta"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:textColor="@color/text_dark"
-                    android:textSize="12sp" />
-            </LinearLayout>
+                android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

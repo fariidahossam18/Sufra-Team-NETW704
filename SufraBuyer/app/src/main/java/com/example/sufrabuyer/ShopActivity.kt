@@ -14,6 +14,7 @@ import com.example.sufrabuyer.databinding.ActivityShopBinding
  * and read here with getStringExtra(...). The products grid itself is ProductsFragment.
  *
  * At the bottom there is a "View cart" bar (only when the cart has items from this shop).
+ * It opens CartActivity on top of this screen, so Back returns to this shop.
  */
 class ShopActivity : AppCompatActivity() {
 
@@ -86,12 +87,11 @@ class ShopActivity : AppCompatActivity() {
         }
     }
 
-    /** Goes back to the home screen and opens the Cart tab (the tab number is sent with putExtra). */
+    /**
+     * Opens the cart on its own screen (CartActivity) ON TOP of this shop,
+     * so the back arrow / Back button returns to this same shop.
+     */
     private fun openCart() {
-        val intent = Intent(this, BuyerHomeActivity::class.java)
-            .putExtra(BuyerHomeActivity.EXTRA_OPEN_TAB, BuyerHomeActivity.TAB_CART)
-            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        startActivity(intent)
-        finish()
+        startActivity(Intent(this, CartActivity::class.java))
     }
 }

@@ -43,6 +43,10 @@
         <activity
             android:name=".ShopActivity"
             android:exported="false" />
+        <!-- Milestone 3: the cart on its own screen, opened from a shop's "View cart" bar -->
+        <activity
+            android:name=".CartActivity"
+            android:exported="false" />
         <activity
             android:name=".ProfileActivity"
             android:exported="false"

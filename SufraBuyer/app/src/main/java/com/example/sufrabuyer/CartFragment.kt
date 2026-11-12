@@ -53,9 +53,7 @@ class CartFragment : Fragment() {
         binding.btnClear.setOnClickListener { confirmClear() }
         binding.btnPlaceOrder.setOnClickListener { placeOrder() }
         binding.cardAddress.setOnClickListener { openProfile() }
-        binding.btnBrowse.setOnClickListener {
-            (activity as? BuyerHomeActivity)?.openTab(BuyerHomeActivity.TAB_SHOPS)
-        }
+        binding.btnBrowse.setOnClickListener { backToShopping() }
 
         CartManager.addListener(cartListener)
         showCart()
@@ -110,6 +108,15 @@ class CartFragment : Fragment() {
             .setNegativeButton("Cancel", null)
             .setPositiveButton("Clear") { _, _ -> CartManager.clear() }
             .show()
+    }
+
+    /**
+     * In the home screen: switch to the Shops tab.
+     * In CartActivity (opened from a shop): close the cart, which goes back to that shop.
+     */
+    private fun backToShopping() {
+        val home = activity as? BuyerHomeActivity
+        if (home != null) home.openTab(BuyerHomeActivity.TAB_SHOPS) else activity?.finish()
     }
 
     private fun openProfile() = startActivity(Intent(requireContext(), ProfileActivity::class.java))
@@ -246,9 +253,7 @@ class CartFragment : Fragment() {
                         "${order.itemCount} items · ${formatPrice(order.totalPrice)}\n" +
                         "Delivering to: ${order.address}"
             )
-            .setPositiveButton("Great") { _, _ ->
-                (activity as? BuyerHomeActivity)?.openTab(BuyerHomeActivity.TAB_SHOPS)
-            }
+            .setPositiveButton("Great") { _, _ -> backToShopping() }
             .show()
     }
 }
