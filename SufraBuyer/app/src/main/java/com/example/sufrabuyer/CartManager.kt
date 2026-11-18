@@ -117,6 +117,20 @@ object CartManager {
         notifyChanged()
     }
 
+    /**
+     * Puts back an item that was just removed (the UNDO button of the Snackbar, Tutorial 5).
+     * [sellerId] and [shopName] are the cart's shop from before the removal.
+     */
+    fun restore(item: CartItem, sellerId: String, shopName: String) {
+        if (belongsToOtherShop(sellerId)) return
+        if (items.isEmpty()) {
+            shopId = sellerId
+            this.shopName = shopName
+        }
+        items[item.productId] = item
+        notifyChanged()
+    }
+
     fun clear() {
         items.clear()
         resetShop()

@@ -1,9 +1,12 @@
 package com.example.sufraseller
 
+import android.Manifest
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.sufraseller.databinding.ActivitySellerHomeBinding
@@ -30,11 +33,41 @@ class SellerHomeActivity : AppCompatActivity() {
         const val TAB_PRODUCTS = 0
         const val TAB_ADD = 1
         const val TAB_ORDERS = 2
+
+        /** Used by the notification to open a specific tab (Tutorial 5). */
+        const val EXTRA_OPEN_TAB = "open_tab"
     }
 
     private lateinit var binding: ActivitySellerHomeBinding
     private lateinit var uid: String
     private lateinit var ordersQuery: Query
+
+    // ---- Tutorial 5: new-order notifications ----
+    /** Asks for POST_NOTIFICATIONS on Android 13+ (runtime permission). */
+    private val notificationPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (!granted) toast("Notifications are off: you won't be alerted about new orders")
+        }
+
+    /** Orders we already know about, so only NEW ones make a notification. */
+    private val knownOrderIds = mutableSetOf<String>()
+    private var ordersLoadedOnce = false
+
+    /**
+     * Listens to this shop's orders while the app is running (also in the background)
+     * and shows a notification for every order that wasn't there before.
+     */
+    private val newOrdersListener = object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            snapshot.children.mapNotNull { Order.fromSnapshot(it) }.forEach { order ->
+                val isNew = knownOrderIds.add(order.id)
+                if (isNew && ordersLoadedOnce) NotificationHelper.showNewOrder(this@SellerHomeActivity, order)
+            }
+            ordersLoadedOnce = true      // the first load only remembers the old orders
+        }
+
+        override fun onCancelled(error: DatabaseError) {}
+    }
 
     private val headerListener = object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
@@ -85,6 +118,13 @@ class SellerHomeActivity : AppCompatActivity() {
         ordersQuery = FirebaseRefs.ordersRef().orderByChild("sellerId").equalTo(uid)
 
         setupTabs()
+
+        // Tutorial 5: notification channel + permission + listener for new orders
+        NotificationHelper.createChannel(this)
+        askNotificationPermission()
+        ordersQuery.addValueEventListener(newOrdersListener)
+        if (savedInstanceState == null) openTabFromIntent(intent)
+
         binding.avatarContainer.setOnClickListener {
             startActivity(Intent(this, ProfileActivity::class.java))
         }
@@ -114,6 +154,29 @@ class SellerHomeActivity : AppCompatActivity() {
         FirebaseRefs.userRef(uid).addValueEventListener(headerListener)
         FirebaseRefs.sellerProductsRef(uid).addValueEventListener(productsCountListener)
         ordersQuery.addValueEventListener(ordersCountListener)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (::ordersQuery.isInitialized) ordersQuery.removeEventListener(newOrdersListener)
+    }
+
+    /** Tapping the notification brings the dashboard back with EXTRA_OPEN_TAB = TAB_ORDERS. */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        openTabFromIntent(intent)
+    }
+
+    private fun openTabFromIntent(intent: Intent?) {
+        val tab = intent?.getIntExtra(EXTRA_OPEN_TAB, -1) ?: -1
+        if (tab >= 0) openTab(tab)
+    }
+
+    private fun askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !NotificationHelper.canNotify(this)) {
+            notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
     override fun onStop() {

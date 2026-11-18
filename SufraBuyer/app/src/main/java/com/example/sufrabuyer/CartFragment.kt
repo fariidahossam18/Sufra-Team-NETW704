@@ -5,11 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.sufrabuyer.databinding.DialogDeliveryBinding
 import com.example.sufrabuyer.databinding.FragmentCartBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.database.ServerValue
 
 /**
  * Cart tab (Buyer app, Milestone 3).
@@ -29,6 +33,10 @@ class CartFragment : Fragment() {
     private lateinit var adapter: CartAdapter
     private var placingOrder = false
 
+    // Last delivery details read from the profile (used to fill the delivery dialog)
+    private var deliveryAddress = ""
+    private var deliveryPhone = ""
+
     private val cartListener: () -> Unit = { showCart() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -45,14 +53,14 @@ class CartFragment : Fragment() {
                 if (!CartManager.increase(item.productId)) toast("Only ${item.stock} of ${item.name} in stock")
             },
             onDecrease = { item -> CartManager.decrease(item.productId) },
-            onRemove = { item -> CartManager.remove(item.productId) }
+            onRemove = { item -> removeWithUndo(item) }
         )
         binding.rvCart.layoutManager = LinearLayoutManager(requireContext())
         binding.rvCart.adapter = adapter
 
         binding.btnClear.setOnClickListener { confirmClear() }
         binding.btnPlaceOrder.setOnClickListener { placeOrder() }
-        binding.cardAddress.setOnClickListener { openProfile() }
+        binding.cardAddress.setOnClickListener { showDeliveryDialog() }
         binding.btnBrowse.setOnClickListener { backToShopping() }
 
         CartManager.addListener(cartListener)
@@ -96,6 +104,8 @@ class CartFragment : Fragment() {
         FirebaseRefs.userRef(uid).get().addOnSuccessListener { snapshot ->
             val b = _binding ?: return@addOnSuccessListener
             val user = User.fromSnapshot(snapshot)
+            deliveryAddress = user?.address.orEmpty()
+            deliveryPhone = user?.phone.orEmpty()
             b.tvAddress.text = user?.address?.ifBlank { null } ?: "Add your address"
             b.tvPhone.text = user?.phone?.ifBlank { null } ?: "Add your phone number"
         }
@@ -255,5 +265,64 @@ class CartFragment : Fragment() {
             )
             .setPositiveButton("Great") { _, _ -> backToShopping() }
             .show()
+    }
+
+    /* ---------------------------------------------------------------------------
+     *  Tutorial 5 (Alerts): Snackbar with an action + custom layout dialog
+     * ------------------------------------------------------------------------- */
+
+    /** Removes an item and shows a Snackbar with UNDO that puts it back. */
+    private fun removeWithUndo(item: CartItem) {
+        val b = _binding ?: return
+        val sellerId = CartManager.shopId          // remember the shop before the cart may become empty
+        val shopName = CartManager.shopName
+        CartManager.remove(item.productId)
+        Snackbar.make(b.root, "${item.name} removed from your cart", Snackbar.LENGTH_LONG)
+            .setAction("UNDO") { CartManager.restore(item, sellerId, shopName) }
+            .show()
+    }
+
+    /**
+     * Custom layout dialog (setView): edit the delivery address and phone without leaving the cart.
+     * Saved to users/{uid} with updateChildren(), the same way the profile screen does it.
+     */
+    private fun showDeliveryDialog() {
+        val uid = FirebaseRefs.auth.currentUser?.uid ?: return
+        val dialogBinding = DialogDeliveryBinding.inflate(layoutInflater)
+        dialogBinding.etAddress.setText(deliveryAddress)
+        dialogBinding.etPhone.setText(deliveryPhone)
+
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Delivery details")
+            .setView(dialogBinding.root)                       // <- our own XML layout
+            .setPositiveButton("Save", null)                   // set below, so errors keep the dialog open
+            .setNegativeButton("Cancel", null)
+            .setNeutralButton("Open profile") { _, _ -> openProfile() }
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val address = dialogBinding.etAddress.value()
+                val phone = dialogBinding.etPhone.value()
+                dialogBinding.tilAddress.error = if (address.isEmpty()) "Address is required" else null
+                dialogBinding.tilPhone.error =
+                    if (!isValidPhone(phone)) "Enter a valid phone number (8–15 digits)" else null
+                if (dialogBinding.tilAddress.error != null || dialogBinding.tilPhone.error != null) return@setOnClickListener
+
+                val updates = mapOf<String, Any>(
+                    "address" to address,
+                    "phone" to phone,
+                    "updatedAt" to ServerValue.TIMESTAMP
+                )
+                FirebaseRefs.userRef(uid).updateChildren(updates)
+                    .addOnSuccessListener {
+                        toast("Delivery details saved")
+                        loadDeliveryDetails()
+                        dialog.dismiss()
+                    }
+                    .addOnFailureListener { e -> toast("Couldn't save: ${e.message}") }
+            }
+        }
+        dialog.show()
     }
 }
