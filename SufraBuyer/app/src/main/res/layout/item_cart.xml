@@ -84,8 +84,8 @@
 
             <ImageButton
                 android:id="@+id/btnRemove"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Remove from cart"
                 android:src="@drawable/ic_delete"
@@ -93,7 +93,7 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="34dp"
+                android:layout_height="48dp"
                 android:layout_marginTop="4dp"
                 android:background="@drawable/bg_stepper"
                 android:gravity="center_vertical"
@@ -101,8 +101,8 @@
 
                 <ImageButton
                     android:id="@+id/btnMinus"
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Remove one"
                     android:src="@drawable/ic_remove"
@@ -119,8 +119,8 @@
 
                 <ImageButton
                     android:id="@+id/btnPlus"
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Add one more"
                     android:src="@drawable/ic_add"
