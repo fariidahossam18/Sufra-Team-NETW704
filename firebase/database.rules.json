@@ -15,15 +15,31 @@
     "products": {
       ".read": "auth != null",
       "$sellerId": {
-        ".write": "auth != null && auth.uid === $sellerId"
+        ".write": "auth != null && auth.uid === $sellerId",
+        "$productId": {
+          "quantity": {
+            ".write": "auth != null && data.exists() && newData.exists()",
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 9999"
+          }
+        }
       }
     },
     "orders": {
-      ".read": "auth != null && ((query.orderByChild == 'sellerId' && query.equalTo == auth.uid) || (query.orderByChild == 'buyerId' && query.equalTo == auth.uid))",
-      ".indexOn": ["sellerId", "buyerId"],
+      ".read": "auth != null && ((query.orderByChild == 'sellerId' && query.equalTo == auth.uid) || (query.orderByChild == 'buyerId' && query.equalTo == auth.uid) || (query.orderByChild == 'deliveryMethod' && query.equalTo == 'delivery'))",
+      ".indexOn": [
+        "sellerId",
+        "buyerId",
+        "deliveryMethod"
+      ],
       "$orderId": {
-        ".read": "auth != null && (data.child('buyerId').val() === auth.uid || data.child('sellerId').val() === auth.uid)",
-        ".write": "auth != null && ((!data.exists() && newData.child('buyerId').val() === auth.uid) || (data.exists() && (data.child('buyerId').val() === auth.uid || data.child('sellerId').val() === auth.uid)))"
+        ".read": "auth != null && (data.child('buyerId').val() === auth.uid || data.child('sellerId').val() === auth.uid || data.child('deliveryMethod').val() === 'delivery')",
+        ".write": "auth != null && ((!data.exists() && newData.child('buyerId').val() === auth.uid) || (data.exists() && (data.child('buyerId').val() === auth.uid || data.child('sellerId').val() === auth.uid)) || (data.exists() && data.child('deliveryMethod').val() === 'delivery' && (!data.child('driverId').exists() || data.child('driverId').val() === auth.uid) && newData.child('driverId').val() === auth.uid))",
+        "status": {
+          ".validate": "newData.isString() && (newData.val() === 'waiting' || newData.val() === 'preparing' || newData.val() === 'ready' || newData.val() === 'delivering' || newData.val() === 'delivered' || newData.val() === 'rejected' || newData.val() === 'cancelled') && (!data.exists() || auth.uid === data.parent().child('sellerId').val() || (newData.val() === 'cancelled' && (data.val() === 'waiting' || data.val() === 'pending')) || ((newData.val() === 'delivering' || newData.val() === 'delivered') && data.parent().child('driverId').val() === auth.uid))"
+        },
+        "driverId": {
+          ".validate": "newData.isString() && (!data.exists() || data.val() === newData.val())"
+        }
       }
     }
   }

@@ -65,6 +65,19 @@
                     android:textSize="13sp" />
             </LinearLayout>
 
+            <!-- Milestone 4: opens the VoIP call screen -->
+            <ImageButton
+                android:id="@+id/btnCall"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/bg_chip_translucent"
+                android:contentDescription="VoIP call"
+                android:padding="11dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_call"
+                app:tint="@color/white" />
+
             <!-- Avatar: initials, replaced by the S3 profile photo when there is one. Opens the profile. -->
             <FrameLayout
                 android:id="@+id/avatarContainer"

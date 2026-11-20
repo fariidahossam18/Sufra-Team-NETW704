@@ -5,6 +5,12 @@
     <!-- Needed for Firebase and AWS S3 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Milestone 4: order status notifications (asked at runtime on Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Milestone 4: VoIP calls (microphone + choosing speaker/earpiece) -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <application
         android:allowBackup="true"
@@ -49,6 +55,12 @@
             android:exported="false" />
         <activity
             android:name=".ProfileActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <!-- Milestone 4: VoIP call screen (SIP signaling + RTP audio) -->
+        <activity
+            android:name=".CallActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
     </application>

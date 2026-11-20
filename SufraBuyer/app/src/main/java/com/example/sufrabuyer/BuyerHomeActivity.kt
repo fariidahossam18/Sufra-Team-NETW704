@@ -1,11 +1,15 @@
 package com.example.sufrabuyer
 
+import android.Manifest
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import android.content.pm.PackageManager
 import androidx.lifecycle.lifecycleScope
 import com.example.sufrabuyer.databinding.ActivityBuyerHomeBinding
 import com.google.android.material.tabs.TabLayoutMediator
@@ -18,8 +22,10 @@ import kotlinx.coroutines.launch
  * Buyer home screen (Buyer app).
  *
  *  - Header: greeting, delivery address and avatar, live-synced with Firebase (Milestones 1-2)
- *  - Milestone 3: TabLayout + ViewPager2 with two fragments: Shops and Cart.
- *    The user can tap a tab or swipe left/right. The Cart tab shows a badge with the number of items.
+ *  - Milestone 3: TabLayout + ViewPager2 with fragments the user can tap or swipe between.
+ *    The Cart tab shows a badge with the number of items.
+ *  - Milestone 4: a third tab "Orders" (order tracking), the VoIP call button in the header,
+ *    and notifications when the status of one of the buyer's orders changes (BuyerOrderNotifier).
  *
  * Other screens can open a specific tab with   putExtra(EXTRA_OPEN_TAB, TAB_CART)
  */
@@ -29,6 +35,7 @@ class BuyerHomeActivity : AppCompatActivity() {
         const val EXTRA_OPEN_TAB = "open_tab"
         const val TAB_SHOPS = 0
         const val TAB_CART = 1
+        const val TAB_ORDERS = 2      // Milestone 4
     }
 
     private lateinit var binding: ActivityBuyerHomeBinding
@@ -36,6 +43,15 @@ class BuyerHomeActivity : AppCompatActivity() {
 
     /** Called by CartManager whenever the cart changes -> update the badge on the Cart tab. */
     private val cartListener: () -> Unit = { updateCartBadge() }
+
+    /** Milestone 4: watches the buyer's orders and shows a notification when a status changes. */
+    private var orderNotifier: BuyerOrderNotifier? = null
+
+    /** Milestone 4: asks for POST_NOTIFICATIONS on Android 13+. */
+    private val notificationPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (!granted) toast("Notifications are off: you won't be told when your order status changes")
+        }
 
     private val headerListener = object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
@@ -70,6 +86,14 @@ class BuyerHomeActivity : AppCompatActivity() {
         binding.avatarContainer.setOnClickListener {
             startActivity(Intent(this, ProfileActivity::class.java))
         }
+        // Milestone 4: VoIP call screen
+        binding.btnCall.setOnClickListener {
+            startActivity(Intent(this, CallActivity::class.java))
+        }
+
+        // Milestone 4: order status notifications (works while the app is open or in the background)
+        askNotificationPermission()
+        orderNotifier = BuyerOrderNotifier(this).also { it.start(uid) }
 
         if (savedInstanceState == null) openTabFromIntent(intent)
     }
@@ -77,10 +101,11 @@ class BuyerHomeActivity : AppCompatActivity() {
     /** Connects the TabLayout with the ViewPager2 (same idea as Tutorial 3.1). */
     private fun setupTabs() {
         binding.viewPager.adapter = HomePagerAdapter(this)
-        binding.viewPager.offscreenPageLimit = 1
+        binding.viewPager.offscreenPageLimit = 2
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             when (position) {
                 TAB_CART -> { tab.text = "Cart"; tab.setIcon(R.drawable.ic_cart) }
+                TAB_ORDERS -> { tab.text = "Orders"; tab.setIcon(R.drawable.ic_orders) }
                 else -> { tab.text = "Shops"; tab.setIcon(R.drawable.ic_store) }
             }
         }.attach()
@@ -109,6 +134,20 @@ class BuyerHomeActivity : AppCompatActivity() {
         FirebaseRefs.userRef(uid).addValueEventListener(headerListener)
         CartManager.addListener(cartListener)
         updateCartBadge()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        orderNotifier?.stop()
+    }
+
+    private fun askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
     override fun onStop() {

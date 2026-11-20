@@ -128,6 +128,10 @@ class SellerHomeActivity : AppCompatActivity() {
         binding.avatarContainer.setOnClickListener {
             startActivity(Intent(this, ProfileActivity::class.java))
         }
+        // Milestone 4: VoIP call screen
+        binding.btnCall.setOnClickListener {
+            startActivity(Intent(this, CallActivity::class.java))
+        }
     }
 
     /** Connects the TabLayout with the ViewPager2 (same idea as Tutorial 3.1). */
