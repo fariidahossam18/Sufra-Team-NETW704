@@ -6,12 +6,38 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!-- Milestone 4: show only orders that still need work, or all of them -->
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipFilter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        app:checkedChip="@+id/chipActive"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipActive"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="To do" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipAll"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="All orders" />
+    </com.google.android.material.chip.ChipGroup>
+
     <TextView
         android:id="@+id/tvSummary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="4dp"
         android:textColor="@color/text_grey"
         android:textSize="13sp" />
 
@@ -58,6 +84,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:gravity="center"
+                android:id="@+id/tvEmpty"
                 android:text="New orders from buyers will appear here instantly"
                 android:textColor="@color/text_grey" />
         </LinearLayout>

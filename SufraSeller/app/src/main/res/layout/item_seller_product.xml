@@ -90,7 +90,7 @@
             <!-- Quick stock change: saved to Firebase straight away -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="36dp"
+                android:layout_height="48dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bg_stepper"
                 android:gravity="center_vertical"
@@ -98,8 +98,8 @@
 
                 <ImageButton
                     android:id="@+id/btnMinus"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="One less in stock"
                     android:src="@drawable/ic_remove"
@@ -117,8 +117,8 @@
 
                 <ImageButton
                     android:id="@+id/btnPlus"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="One more in stock"
                     android:src="@drawable/ic_add"
