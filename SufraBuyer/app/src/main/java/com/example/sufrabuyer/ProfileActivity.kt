@@ -54,7 +54,7 @@ class ProfileActivity : AppCompatActivity() {
         }
 
     private val profileListener = object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
+        override fun onDataChange(snapshot: DataSnapshot) { bbvbvbv  
             val user = User.fromSnapshot(snapshot) ?: return
             currentUser = user
             bindUser(user)
