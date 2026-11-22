@@ -1,0 +1,8 @@
+<resources>
+    <!-- Sufra Delivery: the volunteer drivers' app (Milestone 4 bonus) -->
+    <string name="app_name">Sufra Delivery</string>
+    <string name="tagline">Deliver orders, earn rewards</string>
+    <string name="header_emojis">🛵  📦  ⭐  🎁  🏠</string>
+    <string name="login_title">Ready to deliver?</string>
+    <string name="login_subtitle">Sign in with your Sufra buyer account</string>
+</resources>
